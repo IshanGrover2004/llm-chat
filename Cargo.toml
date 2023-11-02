@@ -9,3 +9,4 @@ edition = "2021"
 anyhow = "1.0.75"
 clap = { version = "4.4.7", features = ["derive"] }
 llm = { git = "https://github.com/rustformers/llm.git" }
+rand = "0.8.5"

@@ -1,7 +1,12 @@
-// Run: `cargo run --release -- -p "What do you think about Rust lang?" -m ./open_llama_3b-f16.bin`
+// Not for now - Run(for cli): `cargo run --release -- -p "What do you think about Rust lang?" -m ./open_llama_3b-f16.bin`
 
-use std::{convert::Infallible, io::Write};
+use std::{convert::Infallible, io::Write, net::SocketAddr, path::PathBuf};
 
+use axum::{
+    response::{Html, IntoResponse},
+    routing::get,
+    Router,
+};
 use clap::Parser;
 
 #[derive(Parser, Debug)]
@@ -13,20 +18,48 @@ struct Args {
     prompt: String,
 }
 
-fn infer() -> anyhow::Result<()> {
-    let args = Args::parse();
+#[derive(Debug, thiserror::Error)]
+enum Error {
+    #[error("Unable to start server")]
+    UnableToStartServer,
+}
 
-    // What model we are using?
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let router: Router = Router::new().route("/", get(handler_root));
+
+    // Making a local host
+    let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
+
+    // ---------- Start the server ---------------
+    colour::green_ln!(">> Listening on {addr}\n");
+    axum::Server::bind(&addr)
+        .serve(router.into_make_service())
+        .await
+        .map_err(|_| Error::UnableToStartServer)?;
+
+    Ok(())
+}
+
+// Hanle the root("/") path
+async fn handler_root() -> impl IntoResponse {
+    colour::blue_ln!(">> HANDLER - Root");
+    Html("<h1>Welcome to chatbot</h1>")
+}
+
+fn infer(model_path: PathBuf, prompt: impl AsRef<str>) -> anyhow::Result<()> {
+    // What model to use
     let model_architecture = llm::ModelArchitecture::Llama;
-    // Path of model binary we are using
-    let model_path = args.model_path;
-    // Path of tokenizer from llm
+    // Path of model binary
+    let model_path = model_path;
+    // Path of tokenizer
     let tokenizer_source = llm::TokenizerSource::Embedded;
-    // The prompt to ask
-    let prompt = args.prompt;
+    // Prompt to ask
+    let prompt = prompt.as_ref();
     // Time at which program is executed
     let now_time = std::time::Instant::now();
 
+    // Loading model with necessary details
     let model = llm::load_dynamic(
         Some(model_architecture),
         &model_path,
@@ -44,12 +77,12 @@ fn infer() -> anyhow::Result<()> {
     let mut session = model.start_session(Default::default());
 
     let result = session.infer::<Infallible>(
-        // model to use
+        // Model to use
         model.as_ref(),
         &mut rand::thread_rng(),
         // Request for prompt
         &llm::InferenceRequest {
-            prompt: (&prompt).into(),
+            prompt: (prompt).into(),
             parameters: &llm::InferenceParameters::default(),
             play_back_previous_tokens: false,
             maximum_token_count: None,
@@ -74,8 +107,4 @@ fn infer() -> anyhow::Result<()> {
     }
 
     Ok(())
-}
-
-fn main() {
-    infer().unwrap();
 }

@@ -1,5 +1,11 @@
 // Not for now - Run(for cli): `cargo run --release -- -p "What do you think about Rust lang?" -m ./open_llama_3b-f16.bin`
 
+// Example:
+// http://127.0.0.1:8000/
+// http://127.0.0.1:8000/chat
+// http://127.0.0.1:8000/chat/this is my prompt
+// http://127.0.0.1:8000//chat?prompt=this is my prompt
+
 use std::{convert::Infallible, io::Write, net::SocketAddr, path::PathBuf};
 
 use axum::{
@@ -42,7 +48,7 @@ async fn main() -> anyhow::Result<()> {
     let router: Router = Router::new()
         .route("/", get(handler_root))
         .route("/chat", get(handler_chat_query))
-        .route("/chat:prompt", get(handler_chat_path));
+        .route("/chat/:prompt", get(handler_chat_path));
 
     // Making a local host
     let addr = SocketAddr::from(([127, 0, 0, 1], 8000));

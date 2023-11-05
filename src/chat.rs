@@ -48,7 +48,7 @@ impl Prompt {
 
     /// Performs inference based on the prompt
     pub fn infer(&self) -> anyhow::Result<Response> {
-        let path: &str = "/home/tan/Documents/Projects/llm_task/my_llm/open_llama_3b-f16.bin";
+        let path: &str = "./assets/open_llama_3b-f16.bin";
 
         // What model to use
         let model_architecture = llm::ModelArchitecture::Llama;

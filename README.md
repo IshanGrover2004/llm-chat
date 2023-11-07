@@ -29,9 +29,9 @@ This project is a demonstration of a Large Language Model (LLM) chatbot built us
 
 ### Key Concepts
 
-To understand how LLMs work, it's essential to grasp the following key concepts:
+To grasp LLM functionality, it's crucial to understand these key concepts:
 
-- **Pre-training and Fine-Tuning:** LLMs are initially trained on a large dataset to learn general language understanding and representation. Subsequently, a pre-trained model can be fine-tuned with a task-specific dataset for applications like text classification, translation, or text generation.
+- **Pre-training and Fine-Tuning:** LLMs are initially trained on extensive datasets to learn general language understanding. They can be fine-tuned with task-specific data for applications like text classification, translation, and generation.
 
 - **Tokenization:** Tokenization involves breaking text into smaller units, such as words, subwords, or characters, for processing by LLMs.
 

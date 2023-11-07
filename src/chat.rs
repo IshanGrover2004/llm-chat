@@ -2,6 +2,7 @@ use std::{convert::Infallible, io::Write, path::PathBuf};
 
 use axum::{response::IntoResponse, Json};
 use llm::Model;
+use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -14,6 +15,10 @@ enum InferenceError {
     UnableToCreateResponse(String),
 }
 
+/// Loading llm model
+static MODEL: Lazy<Box<dyn llm::Model>> =
+    Lazy::new(|| load_model().expect("Unable to load llm model"));
+
 /// Represents a user prompt & corresponding response from LLM.
 #[derive(Debug, Serialize, Deserialize)]
 pub(crate) struct Prompt {
@@ -25,8 +30,11 @@ pub(crate) struct Prompt {
 
 impl Prompt {
     /// Creates a new Prompt instance.
-    pub fn new(prompt: Option<String>, response: Option<String>) -> Self {
-        Self { prompt, response }
+    pub fn new<S: Into<String>>(prompt: Option<S>, response: Option<S>) -> Self {
+        Self {
+            prompt: prompt.map(|s| s.into()),
+            response: response.map(|s| s.into()),
+        }
     }
 
     /// Gets the prompt string.
@@ -40,7 +48,7 @@ impl Prompt {
     }
 
     /// Generates a reply for the given prompt.
-    pub fn generate_reply_for_prompt(&mut self) -> impl IntoResponse {
+    pub fn generate_reply(&mut self) -> impl IntoResponse {
         self.get_prompt().map(|prompt_str| -> Json<_> {
             self.infer().expect("Unable to generate LLM response");
             json!({"prompt": prompt_str, "response": self.get_response()}).into()
@@ -50,15 +58,11 @@ impl Prompt {
 
     /// Performs inference based on the prompt and updates the response.
     pub fn infer(&mut self) -> anyhow::Result<()> {
-        let model = self
-            .load_model()
-            .map_err(|err| InferenceError::UnableToLoadModel(err.to_string()))?;
-
         let start_time = std::time::Instant::now().elapsed().as_millis();
         println!("Model fully loaded! Elapsed: {}ms", start_time);
 
         // ---------- Starting session --------------
-        let mut session = model.start_session(Default::default());
+        let mut session = MODEL.start_session(Default::default());
 
         let inference_request = &llm::InferenceRequest {
             prompt: (self.prompt.as_deref().unwrap()).into(),
@@ -67,10 +71,11 @@ impl Prompt {
             maximum_token_count: Some(100),
         };
 
+        let mut response = String::new();
         session
             .infer::<Infallible>(
                 // Loaded model
-                model.as_ref(),
+                MODEL.as_ref(),
                 // Random range
                 &mut rand::thread_rng(),
                 // Request for inference
@@ -82,7 +87,7 @@ impl Prompt {
                     llm::InferenceResponse::PromptToken(t)
                     | llm::InferenceResponse::InferredToken(t) => {
                         print!("{t}");
-                        self.response = Some(t);
+                        response.push_str(&t);
 
                         std::io::stdout().flush().unwrap();
 
@@ -93,21 +98,23 @@ impl Prompt {
             )
             .map_err(|e| InferenceError::UnableToCreateResponse(e.to_string()))?;
 
+        self.response = Some(response);
+
         Ok(())
     }
+}
 
-    /// Loads the model
-    pub fn load_model(&self) -> anyhow::Result<Box<dyn Model>> {
-        let model_architecture = llm::ModelArchitecture::Llama;
-        let model_path = PathBuf::from("./assets/open_llama_3b-f16.bin");
-        let tokenizer_source = llm::TokenizerSource::Embedded;
+/// Loads the model
+pub fn load_model() -> anyhow::Result<Box<dyn Model>> {
+    let model_architecture = llm::ModelArchitecture::Llama;
+    let model_path = PathBuf::from("./assets/open_llama_3b-f16.bin");
+    let tokenizer_source = llm::TokenizerSource::Embedded;
 
-        Ok(llm::load_dynamic(
-            Some(model_architecture),
-            &model_path,
-            tokenizer_source,
-            Default::default(),
-            llm::load_progress_callback_stdout,
-        )?)
-    }
+    Ok(llm::load_dynamic(
+        Some(model_architecture),
+        &model_path,
+        tokenizer_source,
+        Default::default(),
+        llm::load_progress_callback_stdout,
+    )?)
 }

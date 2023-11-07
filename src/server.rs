@@ -45,7 +45,7 @@ async fn handle_chat_query(Query(query): Query<Prompt>) -> impl IntoResponse {
     let mut prompt = query;
     colour::blue_ln!(">> HANDLER - Handling /chat - {:?}", &prompt);
 
-    prompt.generate_reply_for_prompt()
+    prompt.generate_reply()
 }
 
 /// Handles the "/chat/my prompt.."
@@ -53,5 +53,5 @@ async fn handle_chat_path(Path(query): Path<Prompt>) -> impl IntoResponse {
     let mut prompt = query;
     colour::blue_ln!(">> HANDLER - Handling /chat - {:?}", &prompt);
 
-    prompt.generate_reply_for_prompt()
+    prompt.generate_reply()
 }

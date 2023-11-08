@@ -1,6 +1,9 @@
 use std::{convert::Infallible, io::Write, path::PathBuf};
 
-use axum::{response::IntoResponse, Json};
+use axum::{
+    response::{Html, IntoResponse},
+    Json,
+};
 use llm::Model;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
@@ -49,11 +52,22 @@ impl Prompt {
 
     /// Generates a reply for the given prompt.
     pub fn generate_reply(&mut self) -> impl IntoResponse {
-        self.get_prompt().map(|prompt_str| -> Json<_> {
-            self.infer().expect("Unable to generate LLM response");
-            json!({"prompt": prompt_str, "response": self.get_response()}).into()
-        })
-        .unwrap_or(json!({"Suggestion":"To initiate a chat, add \"/chat?prompt=my prompt\" or \"/chat/my prompt\""}).into())
+        self.get_prompt()
+            .map(|prompt_str| -> Html<_> {
+                self.infer().expect("Unable to generate LLM response");
+                Html(format!(
+                    "<strong>Prompt:</strong> {}\n<strong>Response:</strong> {}",
+                    prompt_str,
+                    self.get_response().unwrap()
+                ))
+            })
+            .unwrap_or(Html(
+                "<h1 style=\"text-align: center;\">Welcome to LLM-Chat</h1>
+<p style=\"text-align: center;\"><strong>Suggestion</strong>: To initiate a chat, add the following path to url:
+<br>1. <code>/chat?prompt=your prompt</code>
+<br>2. <code>/chat/your prompt</code></p>"
+                    .to_string(),
+            ))
     }
 
     /// Performs inference based on the prompt and updates the response.

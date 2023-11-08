@@ -36,8 +36,12 @@ pub async fn start_server() -> anyhow::Result<()> {
 /// Handles the root("/")
 async fn handle_root() -> impl IntoResponse {
     colour::blue_ln!(">> HANDLER - Root");
-    Html("<h1>Welcome to Chatbot</h1>
-<p><strong>Suggestion</strong>: To initiate a chat, add <code>/chat?prompt=this is prompt</code> or <code>/chat/this is prompt</code> to the path of this site.</p>")
+    Html(
+        "<h1 style=\"text-align: center;\">Welcome to LLM-Chat</h1>
+<p style=\"text-align: center;\"><strong>Suggestion</strong>: To initiate a chat, add the following path to url:
+<br>1. <code>/chat?prompt=your prompt</code>
+<br>2. <code>/chat/your prompt</code></p>",
+    )
 }
 
 /// Handles the "/chat?prompt='..'"

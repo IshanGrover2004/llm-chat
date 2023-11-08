@@ -10,8 +10,6 @@
 - [Getting Started](#getting-started)
   - [Installation](#installation)
   - [Usage](#usage)
-    <!-- - [Example](#example) -->
-    <!-- - [Additional Features](#additional-features) -->
     <!-- - [Contributing](#contributing) -->
     <!-- - [License](#license) -->
 
@@ -29,9 +27,9 @@ This project is a demonstration of a Large Language Model (LLM) chatbot built us
 
 ### Key Concepts
 
-To understand how LLMs work, it's essential to grasp the following key concepts:
+To grasp LLM functionality, it's crucial to understand these key concepts:
 
-- **Pre-training and Fine-Tuning:** LLMs are initially trained on a large dataset to learn general language understanding and representation. Subsequently, a pre-trained model can be fine-tuned with a task-specific dataset for applications like text classification, translation, or text generation.
+- **Pre-training and Fine-Tuning:** LLMs are initially trained on extensive datasets to learn general language understanding. They can be fine-tuned with task-specific data for applications like text classification, translation, and generation.
 
 - **Tokenization:** Tokenization involves breaking text into smaller units, such as words, subwords, or characters, for processing by LLMs.
 
@@ -59,22 +57,15 @@ Some applications of LLM includes:
 
 ### Installation
 
-To set up project locally, follow these steps:
-
-1. Clone the repository
+To set up project locally, run the command to terminal(for Linux) or git bash(for Windows):
 
 ```bash
-git clone https://github.com/IshanGrover2004/llm-chat.git && cd llm-chat
-```
-
-2. Run `setup.sh` script to automate the setup process. This script file will download the LLM model binary file.
-
-```shell
-chmod +x setup.sh
-./setup.sh
+curl -o setup.sh https://raw.githubusercontent.com/IshanGrover2004/llm-chat/master/setup.sh && chmod +x setup.h && ./setup.sh
 ```
 
 ### Usage
+
+To use this project, first make sure you have [Rust installed](https://www.rust-lang.org/tools/install) on your system.
 
 1. Start the server
 
@@ -82,9 +73,9 @@ chmod +x setup.sh
 cargo run --release
 ```
 
-2. Open http://127.0.0.1:8000/ in your browser.
+2. Open http://localhost:8000/ in your browser.
 
 3. Interact with LLM chatbot by entering:
 
-- http://127.0.0.1:8000/chat/my_prompt
-- http://127.0.0.1:8000/chat?prompt=my_prompt
+- http://localhost:8000/chat/my_prompt
+- http://localhost:8000/chat?prompt=my_prompt

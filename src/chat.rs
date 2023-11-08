@@ -7,7 +7,6 @@ use axum::{
 use llm::Model;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 
 #[derive(thiserror::Error, Debug)]
 enum InferenceError {
@@ -53,13 +52,9 @@ impl Prompt {
     /// Generates a reply for the given prompt.
     pub fn generate_reply(&mut self) -> impl IntoResponse {
         self.get_prompt()
-            .map(|prompt_str| -> Html<_> {
+            .map(|_| -> Html<_> {
                 self.infer().expect("Unable to generate LLM response");
-                Html(format!(
-                    "<strong>Prompt:</strong> {}\n<strong>Response:</strong> {}",
-                    prompt_str,
-                    self.get_response().unwrap()
-                ))
+                self.response_ui()
             })
             .unwrap_or(Html(
                 "<h1 style=\"text-align: center;\">Welcome to LLM-Chat</h1>
@@ -116,6 +111,19 @@ impl Prompt {
 
         Ok(())
     }
+
+    fn response_ui(&self) -> Html<String> {
+        Html(format!("<h1 style=\"text-align: center;\">Welcome</h1>
+    <div style=\"display: flex; flex-direction: column; max-width: 1300px; margin: 0 auto;\">
+        <div style=\"display: flex; justify-content: flex-start; align-items: center; margin: 5px; background-color: grey; color: white; padding: 5px; border-radius: 5px;\">
+            <h3>Prompt</h3> <span style=\"margin-left: 20px;\">{}</span>
+        </div>
+
+        <div style=\"display: flex; justify-content: flex-start; align-items: center; margin: 5px; background-color: #212121; color: white; padding: 5px; border-radius: 5px;\">
+            <h3>Response</h3> <span style=\"margin-left: 20px;\">{}</span>
+        </div>
+    </div>", "hi, this is my customisable prompt","From LLM, This is resoponse"))
+    }
 }
 
 /// Loads the model
@@ -130,5 +138,6 @@ pub fn load_model() -> anyhow::Result<Box<dyn Model>> {
         tokenizer_source,
         Default::default(),
         llm::load_progress_callback_stdout,
-    )?)
+    )
+    .map_err(|e| InferenceError::UnableToLoadModel(e.to_string()))?)
 }

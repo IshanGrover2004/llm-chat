@@ -10,8 +10,6 @@
 - [Getting Started](#getting-started)
   - [Installation](#installation)
   - [Usage](#usage)
-    <!-- - [Example](#example) -->
-    <!-- - [Additional Features](#additional-features) -->
     <!-- - [Contributing](#contributing) -->
     <!-- - [License](#license) -->
 
@@ -59,22 +57,15 @@ Some applications of LLM includes:
 
 ### Installation
 
-To set up project locally, follow these steps:
-
-1. Clone the repository
+To set up project locally, run the command to terminal(for Linux) or git bash(for Windows):
 
 ```bash
-git clone https://github.com/IshanGrover2004/llm-chat.git && cd llm-chat
-```
-
-2. Run `setup.sh` script to automate the setup process. This script file will download the LLM model binary file.
-
-```shell
-chmod +x setup.sh
-./setup.sh
+curl -o setup.sh https://raw.githubusercontent.com/IshanGrover2004/llm-chat/master/setup.sh && chmod +x setup.h && ./setup.sh
 ```
 
 ### Usage
+
+To use this project, first make sure you have [Rust installed](https://www.rust-lang.org/tools/install) on your system.
 
 1. Start the server
 
@@ -82,9 +73,9 @@ chmod +x setup.sh
 cargo run --release
 ```
 
-2. Open http://127.0.0.1:8000/ in your browser.
+2. Open http://localhost:8000/ in your browser.
 
 3. Interact with LLM chatbot by entering:
 
-- http://127.0.0.1:8000/chat/my_prompt
-- http://127.0.0.1:8000/chat?prompt=my_prompt
+- http://localhost:8000/chat/my_prompt
+- http://localhost:8000/chat?prompt=my_prompt

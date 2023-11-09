@@ -7,6 +7,7 @@ use axum::{
 use llm::Model;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 
 #[derive(thiserror::Error, Debug)]
 enum InferenceError {
@@ -52,17 +53,13 @@ impl Prompt {
     /// Generates a reply for the given prompt.
     pub fn generate_reply(&mut self) -> impl IntoResponse {
         self.get_prompt()
-            .map(|_| -> Html<_> {
+            .map(|_| -> Json<_> {
                 self.infer().expect("Unable to generate LLM response");
-                self.response_ui()
+                Json(json!({
+                "prompt": self.prompt, "response": self.response
+                }))
             })
-            .unwrap_or(Html(
-                "<h1 style=\"text-align: center;\">Welcome to LLM-Chat</h1>
-<p style=\"text-align: center;\"><strong>Suggestion</strong>: To initiate a chat, add the following path to url:
-<br>1. <code>/chat?prompt=your prompt</code>
-<br>2. <code>/chat/your prompt</code></p>"
-                    .to_string(),
-            ))
+            .unwrap_or(Json(json!({"suggestion": "type something in input box"})))
     }
 
     /// Performs inference based on the prompt and updates the response.
@@ -122,7 +119,7 @@ impl Prompt {
         <div style=\"display: flex; justify-content: flex-start; align-items: center; margin: 5px; background-color: #212121; color: white; padding: 5px; border-radius: 5px;\">
             <h3>Response</h3> <span style=\"margin-left: 20px;\">{}</span>
         </div>
-    </div>", "hi, this is my customisable prompt","From LLM, This is resoponse"))
+    </div>", self.prompt.clone().unwrap(),self.response.clone().unwrap()))
     }
 }
 

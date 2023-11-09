@@ -6,8 +6,9 @@ use axum::{
     extract::{Path, Query},
     response::{Html, IntoResponse},
     routing::get,
-    Router,
+    Json, Router,
 };
+use serde_json::json;
 
 #[derive(Debug, thiserror::Error)]
 enum ServerError {
@@ -36,12 +37,14 @@ pub async fn start_server() -> anyhow::Result<()> {
 /// Handles the root("/")
 async fn handle_root() -> impl IntoResponse {
     colour::blue_ln!(">> HANDLER - Root");
-    Html(
-        "<h1 style=\"text-align: center;\">Welcome to LLM-Chat</h1>
-<p style=\"text-align: center;\"><strong>Suggestion</strong>: To initiate a chat, add the following path to url:
-<br>1. <code>/chat?prompt=your prompt</code>
-<br>2. <code>/chat/your prompt</code></p>",
-    )
+    //     Html(
+    //         "<h1 style=\"text-align: center;\">Welcome to LLM-Chat</h1>
+    // <p style=\"text-align: center;\"><strong>Suggestion</strong>: To initiate a chat, add the following path to url:
+    // <br>1. <code>/chat?prompt=your prompt</code>
+    // <br>2. <code>/chat/your prompt</code></p>",
+    //     )
+
+    Json(json!({"Suggestion": "Input prompt in chatbox"}))
 }
 
 /// Handles the "/chat?prompt='..'"

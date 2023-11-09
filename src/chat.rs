@@ -1,9 +1,6 @@
 use std::{convert::Infallible, io::Write, path::PathBuf};
 
-use axum::{
-    response::{Html, IntoResponse},
-    Json,
-};
+use axum::{response::IntoResponse, Json};
 use llm::Model;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
@@ -107,19 +104,6 @@ impl Prompt {
         self.response = Some(response);
 
         Ok(())
-    }
-
-    fn response_ui(&self) -> Html<String> {
-        Html(format!("<h1 style=\"text-align: center;\">Welcome</h1>
-    <div style=\"display: flex; flex-direction: column; max-width: 1300px; margin: 0 auto;\">
-        <div style=\"display: flex; justify-content: flex-start; align-items: center; margin: 5px; background-color: grey; color: white; padding: 5px; border-radius: 5px;\">
-            <h3>Prompt</h3> <span style=\"margin-left: 20px;\">{}</span>
-        </div>
-
-        <div style=\"display: flex; justify-content: flex-start; align-items: center; margin: 5px; background-color: #212121; color: white; padding: 5px; border-radius: 5px;\">
-            <h3>Response</h3> <span style=\"margin-left: 20px;\">{}</span>
-        </div>
-    </div>", self.prompt.clone().unwrap(),self.response.clone().unwrap()))
     }
 }
 

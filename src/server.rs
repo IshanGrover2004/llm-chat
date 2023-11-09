@@ -8,7 +8,8 @@ use axum::{
     routing::get,
     Json, Router,
 };
-use serde_json::json;
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 
 #[derive(Debug, thiserror::Error)]
 enum ServerError {
@@ -23,7 +24,8 @@ pub async fn start_server() -> anyhow::Result<()> {
         .route("/chat", get(handle_chat_query))
         .route("/chat/:prompt", get(handle_chat_path));
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
+    let port = Config::parse_port();
+    let addr = SocketAddr::from(([127, 0, 0, 1], port));
 
     // ---------- Start the server ---------------
     colour::green_ln!(">> Listening on {addr}\n");
@@ -33,6 +35,28 @@ pub async fn start_server() -> anyhow::Result<()> {
 
     Ok(())
 }
+
+#[derive(Serialize, Deserialize)]
+struct Config {
+    port: u16,
+}
+
+impl Config {
+    fn parse_port() -> u16 {
+        let content = include_str!("./../config.json");
+        let config: Config = serde_json::from_str(content).unwrap_or(Config { port: 8080 });
+        config.port
+    }
+}
+
+// fn parse_port() -> u8 {
+//     let content = include_str!("./../config.json");
+//     serde_json::from_str(content).map(|port_json: Value| {
+//         port_json
+//             .get("port")
+//             .map(|port| port.to_string().parse::<u8>().ok().unwrap_or(8080))
+//     })
+// }
 
 /// Handles the root("/")
 async fn handle_root() -> impl IntoResponse {

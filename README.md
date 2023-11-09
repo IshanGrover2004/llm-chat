@@ -103,5 +103,10 @@ To use this project, first make sure you have [Rust installed](https://www.rust-
    You can interact with the LLM chatbot by using the following endpoints:
    - http://localhost:8000/chat/my_prompt
    - http://localhost:8000/chat?prompt=my_prompt
+   <table border="1">
+       <tr>
+           <td><b>Note:</b> If you are having problem with availablity of port number then, you can change the server's port number by editing the `config.json` file. The default port is 8080. Ensure the selected port is available and not in use by other applications.</td>
+       </tr>
+   </table>
 
 Feel free to explore the chatbot and experiment with different prompts to generate text-based responses.

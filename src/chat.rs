@@ -1,9 +1,6 @@
 use std::{convert::Infallible, io::Write, path::PathBuf};
 
-use axum::{
-    response::{Html, IntoResponse},
-    Json,
-};
+use axum::{response::IntoResponse, Json};
 use llm::Model;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
@@ -32,42 +29,21 @@ pub(crate) struct Prompt {
 }
 
 impl Prompt {
-    /// Creates a new Prompt instance.
-    pub fn new<S: Into<String>>(prompt: Option<S>, response: Option<S>) -> Self {
-        Self {
-            prompt: prompt.map(|s| s.into()),
-            response: response.map(|s| s.into()),
-        }
-    }
-
     /// Gets the prompt string.
     pub fn get_prompt(&self) -> Option<String> {
         self.prompt.to_owned()
     }
 
-    /// Gets the response string.
-    pub fn get_response(&self) -> Option<String> {
-        self.response.to_owned()
-    }
-
     /// Generates a reply for the given prompt.
     pub fn generate_reply(&mut self) -> impl IntoResponse {
         self.get_prompt()
-            .map(|prompt_str| -> Html<_> {
+            .map(|_| -> Json<_> {
                 self.infer().expect("Unable to generate LLM response");
-                Html(format!(
-                    "<strong>Prompt:</strong> {}\n<strong>Response:</strong> {}",
-                    prompt_str,
-                    self.get_response().unwrap()
-                ))
+                Json(json!({
+                "prompt": self.prompt, "response": self.response
+                }))
             })
-            .unwrap_or(Html(
-                "<h1 style=\"text-align: center;\">Welcome to LLM-Chat</h1>
-<p style=\"text-align: center;\"><strong>Suggestion</strong>: To initiate a chat, add the following path to url:
-<br>1. <code>/chat?prompt=your prompt</code>
-<br>2. <code>/chat/your prompt</code></p>"
-                    .to_string(),
-            ))
+            .unwrap_or(Json(json!({"suggestion": "type something in input box"})))
     }
 
     /// Performs inference based on the prompt and updates the response.
@@ -130,5 +106,6 @@ pub fn load_model() -> anyhow::Result<Box<dyn Model>> {
         tokenizer_source,
         Default::default(),
         llm::load_progress_callback_stdout,
-    )?)
+    )
+    .map_err(|e| InferenceError::UnableToLoadModel(e.to_string()))?)
 }

@@ -4,10 +4,11 @@ use crate::chat::Prompt;
 
 use axum::{
     extract::{Path, Query},
-    response::{Html, IntoResponse},
+    response::IntoResponse,
     routing::get,
-    Router,
+    Json, Router,
 };
+use serde_json::json;
 
 #[derive(Debug, thiserror::Error)]
 enum ServerError {
@@ -36,26 +37,19 @@ pub async fn start_server() -> anyhow::Result<()> {
 /// Handles the root("/")
 async fn handle_root() -> impl IntoResponse {
     colour::blue_ln!(">> HANDLER - Root");
-    Html(
-        "<h1 style=\"text-align: center;\">Welcome to LLM-Chat</h1>
-<p style=\"text-align: center;\"><strong>Suggestion</strong>: To initiate a chat, add the following path to url:
-<br>1. <code>/chat?prompt=your prompt</code>
-<br>2. <code>/chat/your prompt</code></p>",
-    )
+    Json(json!("Ok"))
 }
 
 /// Handles the "/chat?prompt='..'"
-async fn handle_chat_query(Query(query): Query<Prompt>) -> impl IntoResponse {
-    let mut prompt = query;
+async fn handle_chat_query(Query(prompt): Query<Prompt>) -> impl IntoResponse {
+    let mut prompt = prompt;
     colour::blue_ln!(">> HANDLER - Handling /chat - {:?}", &prompt);
-
     prompt.generate_reply()
 }
 
 /// Handles the "/chat/my prompt.."
-async fn handle_chat_path(Path(query): Path<Prompt>) -> impl IntoResponse {
-    let mut prompt = query;
+async fn handle_chat_path(Path(prompt): Path<Prompt>) -> impl IntoResponse {
+    let mut prompt = prompt;
     colour::blue_ln!(">> HANDLER - Handling /chat - {:?}", &prompt);
-
     prompt.generate_reply()
 }

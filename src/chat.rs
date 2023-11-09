@@ -29,22 +29,9 @@ pub(crate) struct Prompt {
 }
 
 impl Prompt {
-    /// Creates a new Prompt instance.
-    pub fn new<S: Into<String>>(prompt: Option<S>, response: Option<S>) -> Self {
-        Self {
-            prompt: prompt.map(|s| s.into()),
-            response: response.map(|s| s.into()),
-        }
-    }
-
     /// Gets the prompt string.
     pub fn get_prompt(&self) -> Option<String> {
         self.prompt.to_owned()
-    }
-
-    /// Gets the response string.
-    pub fn get_response(&self) -> Option<String> {
-        self.response.to_owned()
     }
 
     /// Generates a reply for the given prompt.

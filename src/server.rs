@@ -9,7 +9,7 @@ use axum::{
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::json;
 
 #[derive(Debug, thiserror::Error)]
 enum ServerError {
@@ -48,15 +48,6 @@ impl Config {
         config.port
     }
 }
-
-// fn parse_port() -> u8 {
-//     let content = include_str!("./../config.json");
-//     serde_json::from_str(content).map(|port_json: Value| {
-//         port_json
-//             .get("port")
-//             .map(|port| port.to_string().parse::<u8>().ok().unwrap_or(8080))
-//     })
-// }
 
 /// Handles the root("/")
 async fn handle_root() -> impl IntoResponse {

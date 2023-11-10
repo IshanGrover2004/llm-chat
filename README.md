@@ -60,7 +60,7 @@ This project utilizes the [OpenLLaMA](https://huggingface.co/rustformers/open-ll
 This LLM is a powerful language model designed for natural language understanding and generation tasks. It can be used to generate text-based responses, provide recommendations, and perform a wide range of language-related tasks.
 You can access the model file directly from [Open LLAMA 3B](https://huggingface.co/rustformers/open-llama-ggml/resolve/main/open_llama_3b-f16.bin).
 
-This project serves you a server where users can send prompts to the server, and the LLM will generate responses based on the input prompts.
+This project offers an API that provides a server to which users can connect their UI components like HTML, CSS, JS. The server processes prompts sent by users, and the Language Model (LLM) generates responses based on these input prompts.
 
 To get started with the project, please refer to the [Usage](#usage) section in this README for detailed instructions.
 
@@ -96,17 +96,28 @@ To use this project, first make sure you have [Rust installed](https://www.rust-
        </tr>
    </table>
 
-2. **Access the server:**
-   Open http://localhost:8000/ in your browser.
-
-3. **Interact with the LLM Chatbot:**
-   You can interact with the LLM chatbot by using the following endpoints:
-   - http://localhost:8000/chat/my_prompt
-   - http://localhost:8000/chat?prompt=my_prompt
+2. **Access the server:** Not necessary but recommended  
+   Open http://localhost:8080/ in your browser.
    <table border="1">
        <tr>
-           <td><b>Note:</b> If you are having problem with availablity of port number then, you can change the server's port number by editing the `config.json` file. The default port is 8080. Ensure the selected port is available and not in use by other applications.</td>
+           <td><b>Note:</b> If you are having problem with availablity of port number then, you can change the server's port number by editing the `config.json` file. The default port is 8080.</td>
        </tr>
    </table>
 
-Feel free to explore the chatbot and experiment with different prompts to generate text-based responses.
+3. **Interact with the LLM Chatbot:**  
+   To interact with the LLM chatbot, you have two convenient options:
+
+   1. **UI Interaction:**
+      - Navigate to the `ui` folder and run `index.html`.
+      - Use the input box in the UI to write prompts.
+      - Wait a little for LLM to generate response.
+
+   2. **Directly using endpoints:**
+
+      - Alternatively, you can interact with the LLM chatbot via server-side endpoints:
+        - `http://localhost:8080/chat/my_prompt`
+        - `http://localhost:8080/chat?prompt=my_prompt`  
+         Simply send your prompt to these endpoints, and the server will provide the LLM-generated response.
+
+## Result
+This project is like a toolkit for creating cool things with the Language Model (LLM). The example in the `ui` folder shows how you can use this toolkit to make different stuff in Rust, like chat apps or creative interfaces. I made a basic API using LLM, and the UI demo highlights the variety of projects you can kick off with it. It's an easy way to get started with your creative ideas!

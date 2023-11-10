@@ -71,7 +71,7 @@ To get started with the project, please refer to the [Usage](#usage) section in 
 To set up project locally, run the command to terminal(for Linux) or git bash(for Windows):
 
 ```bash
-curl -o setup.sh https://raw.githubusercontent.com/IshanGrover2004/llm-chat/master/setup.sh && chmod +x setup.h && ./setup.sh
+curl -o setup.sh https://raw.githubusercontent.com/IshanGrover2004/llm-chat/master/setup.sh && chmod +x setup.sh && ./setup.sh
 ```
 
 <table border="1">

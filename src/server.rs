@@ -10,6 +10,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use tower_http::cors::{Any, CorsLayer};
 
 #[derive(Debug, thiserror::Error)]
 enum ServerError {
@@ -19,10 +20,14 @@ enum ServerError {
 
 /// Starts the server and handles incoming requests.
 pub async fn start_server() -> anyhow::Result<()> {
+    let cors = CorsLayer::new().allow_origin(Any);
     let router: Router = Router::new()
         .route("/", get(handle_root))
+        .layer(cors.clone())
         .route("/chat", get(handle_chat_query))
-        .route("/chat/:prompt", get(handle_chat_path));
+        .layer(cors.clone())
+        .route("/chat/:prompt", get(handle_chat_path))
+        .layer(cors);
 
     let port = Config::parse_port();
     let addr = SocketAddr::from(([127, 0, 0, 1], port));

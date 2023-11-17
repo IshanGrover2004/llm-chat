@@ -85,6 +85,30 @@
         border-radius: 8px;
         cursor: pointer;
       }
+
+      @media screen and (max-width: 1440px) {
+        body {
+          padding: 10px;
+        }
+
+        .chat-container {
+          max-width: 100%;
+          border-radius: 0;
+        }
+
+        .chat-messages {
+          max-height: 300px;
+        }
+
+        .input-container {
+          flex-direction: column;
+          padding: 10px;
+        }
+
+        #prompt {
+          margin-bottom: 10px;
+        }
+      }
     </style>
   </head>
   <body>

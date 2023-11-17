@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LLM Chat</title>
+    <title>LLM Writer</title>
     <style>
       body {
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -114,7 +114,7 @@
   <body>
     <div class="chat-container">
       <div class="chat-header">
-        <h1>LLM Chat</h1>
+        <h1>LLM Writer</h1>
       </div>
 
       <div class="chat-messages" id="chatMessages"></div>
@@ -128,6 +128,8 @@
     </div>
 
     <script>
+      let responseFetched = false;
+
       function appendMessage(message, isUser) {
         const chatMessages = document.getElementById("chatMessages");
         const messageElement = document.createElement("div");
@@ -138,10 +140,25 @@
       }
 
       function fetchResponse() {
+        if (responseFetched) {
+          console.log(
+            "Response already fetched. Please wait for the current response.",
+          );
+          return;
+        }
+
         var promptValue = document.getElementById("prompt").value;
 
         // Display user message
         appendMessage(promptValue, true);
+
+        const chatMessages = document.getElementById("chatMessages");
+        const loadingMessage = document.createElement("div");
+        loadingMessage.className = "llm-message";
+        loadingMessage.innerText = "Waiting for response...";
+        chatMessages.appendChild(loadingMessage);
+
+        responseFetched = true;
 
         fetch(
           `http://localhost:8080/chat?prompt=${encodeURIComponent(
@@ -150,12 +167,20 @@
         )
           .then((response) => response.json())
           .then((data) => {
+            // Remove loading message
+            chatMessages.removeChild(loadingMessage);
+
             // Display LLM response
             appendMessage(data.response, false);
           })
           .catch((error) => {
             console.error("Error fetching response:", error);
+            // Remove loading message
+            chatMessages.removeChild(loadingMessage);
             appendMessage("Error fetching response", false);
+          })
+          .finally(() => {
+            responseFetched = false; // Reset the flag after response is received
           });
       }
     </script>
